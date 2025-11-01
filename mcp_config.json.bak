@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "math&time": {
+      "command": "python",
+      "args": [
+        "server.py"
+      ],
+      "transport": "stdio",
+      "disabled": false
+    },
+    "mcp-server-chart": {
+      "url": "https://mcp.api-inference.modelscope.net/0b9983c4f5574f/mcp",
+      "transport": "streamable_http",
+      "disabled": false
+    }
+  }
+}

@@ -1,0 +1,76 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+wheels/
+*.egg-info/
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+application.log
+server.log
+debug.log
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.coverage*
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.sqlite3
+*.sqlite3-journal
+chroma/
+__pycache__/
+
+# 忽略redis服务端配置文件
+redis.conf
+
+# 忽略MCP服务端文件
+mcp_server.py
+
+# 忽略与部署相关的文件
+docker-compose.yml
+
+# 忽略QWEN.md
+QWEN.md
+
+

@@ -1,0 +1,74 @@
+# Dependencies
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache
+**/.coverage
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+application.log
+server.log
+
+# Local development files
+**/node_modules
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Environment variables (but keep .env.example if it exists)
+.env
+
+# Python build artifacts
+*.egg-info/
+build/
+dist/
+*.egg
+*.tar.gz
+
+# Tests
+tests/
+test_*.py
+
+# Other
+.DS_Store
+*.swp
+*.swo
+*~
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# 忽略redis服务端配置文件
+redis.conf
+
+# 忽略MCP服务端文件
+mcp_server.py
+
+# 忽略与部署相关的文件
+docker-compose.yml
+
