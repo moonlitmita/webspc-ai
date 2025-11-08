@@ -9,7 +9,7 @@ from app.services.auth import verify_token
 from app.services.redis_tools import get_active_sessions, add_active_session
 import uuid
 from app.services.history import get_redis_session_history
-from langchain.schema import HumanMessage,AIMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from app.core.lifespan import get_agent
 from app.models.schemas import ChatRequest
 from app.core.logger_config import get_logger
