@@ -73,4 +73,10 @@ docker-compose.yml
 # 忽略QWEN.md
 QWEN.md
 
+# 忽略 dev-redis 目录下的所有持久化文件
+dev-redis/data/
+dev-redis/*.rdb
+dev-redis/*.aof
+dev-redis/*.aof.tmp
+
 

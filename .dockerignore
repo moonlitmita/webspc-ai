@@ -72,3 +72,6 @@ mcp_server.py
 # 忽略与部署相关的文件
 docker-compose.yml
 
+# 忽略dev-redis
+dev-redis/
+

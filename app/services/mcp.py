@@ -5,7 +5,7 @@
 
 import json
 from app.services.robust_mcp_client import RobustMultiServerMCPClient
-from app.services.redis_tools import mcp_redis_client as r
+from app.services.redis_tools import mcp_redis_client as r  # This client should connect to Redis with AOF+RDB persistence enabled
 
 def load_mcp_config_from_redis() -> dict:
     """
@@ -50,17 +50,12 @@ def get_default_mcp_config() -> dict:
     """
     default_config = {
         "mcpServers": {
-            "math&time": {
+            "demo": {
                 "command": "python",
                 "args": [
                     "mcp_server.py"
                 ],
                 "transport": "stdio",
-                "disabled": False
-            },
-            "mcp-server-chart": {
-                "url": "https://mcp.api-inference.modelscope.net/0b9983c4f5574f/mcp",
-                "transport": "streamable_http",
                 "disabled": False
             }
         }
