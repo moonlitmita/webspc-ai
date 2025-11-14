@@ -76,11 +76,12 @@ WebSPC AI 是一个基于 FastAPI 和 LangChain, Langgraph 的 AI 对话系统�
 
 - `ENV`: 运行环境（dev/prod）
 - `FRONTEND_URL`: 前端URL地址（生产环境为前端域名）
-- `REDIS_HOST`: Redis 服务器主机（可选，默认 localhost）
-- `REDIS_PORT`: Redis 服务器端口（可选，默认 6379）
-- `REDIS_SESSION_DB`: Redis 会话数据库索引（可选，默认 0，用于会话历史）
-- `REDIS_MODEL_DB`: Redis 模型数据库索引（可选，默认 1，用于模型配置）
-- `REDIS_MCP_DB`: Redis MCP数据库索引（可选，默认 2，用于MCP配置）
+- `REDIS_SESSION_HOST`: Redis-session实例服务器主机（可选，默认 localhost）
+- `REDIS_MODEL_HOST`: Redis-model实例服务器主机（可选，默认 localhost）
+- `REDIS_MCP_HOST`: Redis-mcp实例服务器主机（可选，默认 localhost）
+- `REDIS_SESSION_PORT`: Redis-session实例服务器端口（可选，默认 6379）
+- `REDIS_MODEL_PORT`: Redis-mdoel实例服务器端口（可选，默认 6380）
+- `REDIS_MCP_PORT`: Redis-mcp实例服务器端口（可选，默认 6381）
 - `LOCALMODEL_API_KEY`: 本地模型 API 密钥（不需要，仅用于占位）
 - `SILICONFLOW_API_KEY`: SiliconFlow API 密钥（根据需要进行配置）
 - `MODELSCOPE_API_KEY`: MODELSCOPE API 密钥（根据需要进行配置）

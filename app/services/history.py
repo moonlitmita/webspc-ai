@@ -4,7 +4,8 @@
 #See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 
 from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain.schema import SystemMessage, HumanMessage, AIMessage
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from app.services.redis_tools import session_redis_client
 import json
 import redis
 
