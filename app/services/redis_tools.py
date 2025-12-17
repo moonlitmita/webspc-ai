@@ -30,13 +30,13 @@ from typing import Final
 # from app.core.config import settings
 
 REDIS_SESSION_HOST: Final = os.getenv("REDIS_SESSION_HOST", "localhost")
-REDIS_SESSION_PORT: Final = int(os.getenv("REDIS_SESSION_PORT", 6379))
+REDIS_SESSION_PORT: Final = int(os.getenv("REDIS_SESSION_PORT", 6380))
 
 REDIS_MODEL_HOST: Final = os.getenv("REDIS_MODEL_HOST", "localhost")
-REDIS_MODEL_PORT: Final = int(os.getenv("REDIS_MODEL_PORT", 6379))
+REDIS_MODEL_PORT: Final = int(os.getenv("REDIS_MODEL_PORT", 6381))
 
 REDIS_MCP_HOST: Final = os.getenv("REDIS_MCP_HOST", "localhost")
-REDIS_MCP_PORT: Final = int(os.getenv("REDIS_MCP_PORT", 6379))
+REDIS_MCP_PORT: Final = int(os.getenv("REDIS_MCP_PORT", 6382))
 
 # REDIS_HOST: Final = os.getenv("REDIS_HOST", settings.redis_host)
 # REDIS_PORT: Final = int(os.getenv("REDIS_PORT", settings.redis_port))
