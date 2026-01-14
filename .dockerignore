@@ -75,3 +75,6 @@ docker-compose.yml
 # 忽略dev-redis
 dev-redis/
 
+# 忽略测试文件夹及文件夹下的所有文件
+test/
+

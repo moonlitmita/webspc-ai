@@ -15,15 +15,16 @@ class MyJwt:
     def __init__(self, secret=jwt_secret):
         self.secret = secret
 
-    def encode(self, userinfo, lifetime=24):
+    def encode(self, userinfo, lifetime=720):
         """
         编码用户信息为JWT token
         :param userinfo: 用户信息字典，必须包含'id'字段
         :param lifetime: token有效期（小时）
         :return: JWT token字符串
         """
+        now = datetime.datetime.now(datetime.timezone.utc)
         payload = {
-            'exp': datetime.datetime.now() + datetime.timedelta(hours=lifetime),
+            'exp': now + datetime.timedelta(minutes=lifetime),
             'data': userinfo
         }
         return jwt.encode(payload, self.secret, algorithm='HS256')

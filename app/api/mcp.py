@@ -29,7 +29,6 @@ async def get_mcp_config(user_id: str = Depends(verify_token)):
 
 @router.post("/retry")
 async def retry_mcp_connections(user_id: str = Depends(verify_token)):
-    # print('user_id_retry', user_id)
     """重试连接失败的MCP服务器"""
     if hasattr(mcp_client, 'retry_failed_servers'):
         try:

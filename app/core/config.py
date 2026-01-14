@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     redis_model_port: int
     redis_mcp_host: str
     redis_mcp_port: int
+    redis_celery_host: str
+    redis_celery_port: int
     localmodel_api_key: str
     siliconflow_api_key: str
     modelscope_api_key: str
