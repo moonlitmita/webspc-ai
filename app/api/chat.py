@@ -73,7 +73,6 @@ async def event_stream(
 # ---------------- 流式接口 ----------------
 @router.post("/stream")
 def chat_stream(req: ChatRequest, user_id: str = Depends(verify_token)):
-    print('userid', user_id)
     # 如果未提供conversation_id或为默认值，则继续使用当前活跃会话
     # 否则创建新的会话
     conversation_id = req.conversation_id

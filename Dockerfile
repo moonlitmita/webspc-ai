@@ -4,4 +4,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt gunicorn
 COPY . .
 EXPOSE 8000
-CMD ["gunicorn", "app.main:app", "-b", "0.0.0.0:8000", "-w", "4", "-k", "uvicorn.workers.UvicornWorker"]
+
+# 使用ENTRYPOINT定义基础命令
+ENTRYPOINT ["python"]

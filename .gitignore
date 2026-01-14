@@ -79,4 +79,7 @@ dev-redis/*.rdb
 dev-redis/*.aof
 dev-redis/*.aof.tmp
 
+# 忽略测试文件夹下的所有文件
+test/
+
 

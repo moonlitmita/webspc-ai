@@ -2,11 +2,23 @@
 
 ## 项目概述
 
-WebSPC AI 是一个基于 FastAPI 和 LangChain, Langgraph 的 AI 对话系统，集成了 MCP（Model Context Protocol）Client，可以自由切换不同的大模型作为 AI 引擎，不仅提供智能对话功能用于六西格玛和 SPC（统计过程控制）领域的咨询，而且支持工具的自动调用。
+WebSPC把传统SPC从“事后看图”升级成“7×24 的 AI 质量副驾驶”——会自己采数、自己判异、自己找根因，还能把结论 @ 你。
 
-前端代码地址：https://gitee.com/valleyfo/webspc-frontend
+## 特色功能：
 
-后端代码地址：https://gitee.com/valleyfo/webspc-backend
+1. 集成了LLM对话引擎及MCP工具链,不但可以让LLM对SPC数据进行分析，还可以调用MCP工具链执行特定任务。
+
+2. 支持动态添加周期性任务，对第三方数据库进行实时数据采集。
+
+3. LLM实时流式监控，异常一出现，立即执行根因分析，并将处理建议自动推到飞书群，@相关责任人，大大提高异常响应时间。
+
+# 开源地址：
+   
+1. 前端业务代码地址：https://gitee.com/valleyfo/webspc-frontend
+
+2. 常规后端业务代码地址：https://gitee.com/valleyfo/webspc-backend
+
+3. AI后端业务代码地址:https://gitee.com/valleyfo/webspc-ai
 
 ## 核心功能
 
@@ -37,6 +49,7 @@ WebSPC AI 是一个基于 FastAPI 和 LangChain, Langgraph 的 AI 对话系统�
 - `app/api/chat.py`: 聊天接口
 - `app/api/session.py`: 会话管理接口
 - `app/api/mcp.py`: MCP 相关接口
+- `app/api/alarm.py`: 告警 相关接口
 
 ## 关键功能实现
 
@@ -60,13 +73,15 @@ WebSPC AI 是一个基于 FastAPI 和 LangChain, Langgraph 的 AI 对话系统�
 - 会话数据在每次添加消息时自动保存到 Redis
 - 设置了 8 小时的过期时间
 
-## API 端点
+## 主要API 端点
 
 - `POST /chat/stream` - 流式对话接口
 - `POST /chat/end_session` - 结束会话接口
 - `GET /mcp` - 获取 MCP 配置
 - `POST /mcp/retry` - 重试 MCP 服务器连接
 - `POST /mcp` - 更新 MCP 配置
+- `GET /config` - 获取 MODEL 配置
+- `POST /analyze` - 触发告警执行链
 - `GET /session/history` - 获取历史会话记录
 - `GET /session/detail` - 获取会话详情
 
@@ -79,9 +94,10 @@ WebSPC AI 是一个基于 FastAPI 和 LangChain, Langgraph 的 AI 对话系统�
 - `REDIS_SESSION_HOST`: Redis-session实例服务器主机（可选，默认 localhost）
 - `REDIS_MODEL_HOST`: Redis-model实例服务器主机（可选，默认 localhost）
 - `REDIS_MCP_HOST`: Redis-mcp实例服务器主机（可选，默认 localhost）
-- `REDIS_SESSION_PORT`: Redis-session实例服务器端口（可选，默认 6379）
-- `REDIS_MODEL_PORT`: Redis-mdoel实例服务器端口（可选，默认 6380）
-- `REDIS_MCP_PORT`: Redis-mcp实例服务器端口（可选，默认 6381）
+- `REDIS_SESSION_PORT`: Redis-session实例服务器端口（可选，默认 6380）
+- `REDIS_MODEL_PORT`: Redis-mdoel实例服务器端口（可选，默认 6381）
+- `REDIS_MCP_PORT`: Redis-mcp实例服务器端口（可选，默认 6382）
+- `REDIS_ALARM_PORT`: Redis-alarm实例服务器端口（可选，默认 6383）
 - `LOCALMODEL_API_KEY`: 本地模型 API 密钥（不需要，仅用于占位）
 - `SILICONFLOW_API_KEY`: SiliconFlow API 密钥（根据需要进行配置）
 - `MODELSCOPE_API_KEY`: MODELSCOPE API 密钥（根据需要进行配置）
@@ -96,7 +112,7 @@ WebSPC AI 是一个基于 FastAPI 和 LangChain, Langgraph 的 AI 对话系统�
 
 1. 安装依赖：
    ```bash
-   pip install -r requirements.txt
+   pip install -r requirements.txt 或者uv sync
    ```
 
 2. 配置环境变量（设置 SILICONFLOW_API_KEY 等）
@@ -127,11 +143,9 @@ WebSPC AI 是一个基于 FastAPI 和 LangChain, Langgraph 的 AI 对话系统�
 
 ## 项目演示地址：https://webspc.top
 
-用户名：admin
+用户名, 登录密码：联系作者获取
 
-登录密码：联系作者获取
-
-## 技术支持：
+## 技术服务：
 
 作者：王宇
 
@@ -141,7 +155,7 @@ QQ: 271989251
 
 Weixin: valleyfo
 
-备注：技术支持包括但不限于
+备注：技术服务包括但不限于
     定制业务开发,
     项目部署,
-    程序使用讲解，代码讲解，SPC理论培训等。
+    应用讲解等。

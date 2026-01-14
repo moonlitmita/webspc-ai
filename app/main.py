@@ -6,7 +6,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.logger_config import setup_logging, get_logger
-from app.api import chat, mcp, session, models
+from app.api import chat, mcp, session, models, alarm
 from app.core.lifespan import lifespan
 from dotenv import load_dotenv
 import os
@@ -44,3 +44,4 @@ app.include_router(chat.router)
 app.include_router(mcp.router)
 app.include_router(session.router)
 app.include_router(models.router)
+app.include_router(alarm.router)

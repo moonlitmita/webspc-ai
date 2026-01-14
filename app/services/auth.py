@@ -11,7 +11,7 @@ from app.core.config import settings
 my_jwt = MyJwt(secret=settings.jwt_secret)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token", auto_error=False)
-print('token', {oauth2_scheme})
+# print('token', {oauth2_scheme})
 
 def verify_token(token: str = Depends(oauth2_scheme)):
     if not token:

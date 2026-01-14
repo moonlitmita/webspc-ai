@@ -2,11 +2,28 @@
 
 ## Project Overview
 
-WebSPC AI is an AI chat system built on FastAPI and LangChain, Langgraph that integrates MCP (Model Context Protocol) Client. It can freely switch between different large models as AI engines, providing intelligent chat functionality for Six Sigma and SPC (Statistical Process Control) consulting, as well as supporting automatic tool calling.
+WebSPC transforms conventional SPC from “after-the-fact chart viewing” into a 7×24 AI Quality Co-Pilot—self-collecting data, self-detecting anomalies, 
 
-Frontend code address: https://gitee.com/valleyfo/webspc-frontend
+self-diagnosing root causes, and @-tagging you with the conclusions.
 
-Backend code address: https://gitee.com/valleyfo/webspc-backend
+## Key Features:
+
+1. Embedded LLM dialog engine plus MCP tool chain—ask the model to analyze SPC data in plain language and watch it invoke MCP tools to carry out any
+follow-up task.
+
+2. Dynamic, periodic tasks can be added on the fly for real-time data ingestion from any third-party database.
+
+3. LLM-powered real-time streaming monitor: the instant an anomaly appears, root-cause analysis kicks in and a recommended action plan is pushed to the
+
+Feishu(Lark) group, @-tagging the right people and slashing response time.
+
+# Open-source repository:
+
+1. Front-end business code address: https://gitee.com/valleyfo/webspc-frontend
+
+2. General back-end business code address: https://gitee.com/valleyfo/webspc-backend
+
+3. AI back-end business code address: https://gitee.com/valleyfo/webspc-ai
 
 ## Core Features
 
@@ -60,13 +77,15 @@ The system implements an improved session management mechanism:
 - Session data is automatically saved to Redis each time a message is added
 - Sets an 8-hour expiration time
 
-## API Endpoints
+## Main API Endpoints
 
 - `POST /chat/stream` - Streaming chat interface
 - `POST /chat/end_session` - End session interface
 - `GET /mcp` - Get MCP configuration
 - `POST /mcp/retry` - Retry MCP server connection
 - `POST /mcp` - Update MCP configuration
+- `GET /config` - Get MODEL configuration
+- `POST /analyze` - Trigger the alert execution chain
 - `GET /session/history` - Get historical session records
 - `GET /session/detail` - Get session details
 
@@ -79,9 +98,10 @@ The following environment variables need to be configured:
 - `REDIS_SESSION_HOST`: Redis-session instance server host (optional, default localhost)
 - `REDIS_MODEL_HOST`: Redis-model instance server host (optional, default localhost)
 - `REDIS_MCP_HOST`: Redis-mcp instance server host (optional, default localhost)
-- `REDIS_SESSION_PORT`: Redis-session instance server port (optional, default 6379)
-- `REDIS_MODEL_PORT`: Redis-mdoel instance server port (optional, default 6380)
-- `REDIS_MCP_PORT`: Redis-mcp instance server port (optional, default 6381)
+- `REDIS_SESSION_PORT`: Redis-session instance server port (optional, default 6380)
+- `REDIS_MODEL_PORT`: Redis-mdoel instance server port (optional, default 6381)
+- `REDIS_MCP_PORT`: Redis-mcp instance server port (optional, default 6382)
+- `REDIS_ALARM_PORT`: Redis-mcp instance server port (optional, default 6383)
 - `LOCALMODEL_API_KEY`: Local model API key (not required, only for placeholder)
 - `SILICONFLOW_API_KEY`: SiliconFlow API key (configure as needed)
 - `MODELSCOPE_API_KEY`: MODELSCOPE API key (configure as needed)
@@ -96,7 +116,7 @@ The following environment variables need to be configured:
 
 1. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install -r requirements.txt or uv sync
    ```
 
 2. Configure environment variables (set SILICONFLOW_API_KEY, etc.)
@@ -128,9 +148,7 @@ The following environment variables need to be configured:
 
 ## Project Demo Address: https://webspc.top
 
-Username: admin
-
-Login password: Contact the author for access
+Username, Login password: Contact the author for access
 
 ## Technical Support:
 
@@ -145,4 +163,4 @@ Weixin: valleyfo
 Note: Technical support includes but is not limited to
     Custom business development,
     Project deployment,
-    Program usage explanation, code explanation, SPC theory training, etc.
+    Application explanation and so on
