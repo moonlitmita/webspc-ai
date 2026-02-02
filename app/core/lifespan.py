@@ -16,6 +16,9 @@ from app.services.model_config import model_service, save_model_configs_to_redis
 # Import the config listener
 from app.services.config_listener import start_config_listener
 
+# Import tool wrapper
+# from app.core.tool_wrapper import ValidatingToolWrapper
+
 load_dotenv()
 logger = get_logger(__name__)
 
@@ -42,6 +45,8 @@ systemPrompt = (
     "准则8: 连续8点落在中心线两侧,但无1点在C区之内"
     "请根据会话历史回答用户的问题"
     "如果MCP server 返回的数据里有链接地址，一定要返回该地址。"
+    "当调用工具后，请根据工具返回的结果简洁地告知用户操作结果，"
+    "如果操作失败，请简要说明失败原因，不要输出工具返回的详细错误信息。"
 )
 
 # 热重载供重试MCP tools连接和保存MCP配置时使用
@@ -49,7 +54,10 @@ async def reload_agent(tools=None, user_id: str = "default_user"):
     """运行期热重载 agent（可被路由多次调用）"""
     global _agent
     if tools is None:   # 重新拉取最新工具
+        # raw_tools = await mcp_client.get_tools()
         tools = await mcp_client.get_tools()
+        # 使用工具包装器包装所有工具，确保参数验证(暂时不启用，如后续遇到mcp工具调用时出现参数问题再启用)。
+        # tools = [ValidatingToolWrapper(tool) for tool in raw_tools]
     # Use the dynamic LLM
     llm = get_current_llm(user_id)
     _agent = create_react_agent(llm, tools, prompt=systemPrompt)

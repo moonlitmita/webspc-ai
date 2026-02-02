@@ -1,9 +1,15 @@
+#Copyright 2025-present Yu Wang. All Rights Reserved.
+#
+#Distributed under MIT license.
+#See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+
 import os
 from typing import Dict, List, Tuple
 from langchain_openai import ChatOpenAI
 from app.core.logger_config import get_logger
 from app.services.redis_tools import model_redis_client  # This client should connect to Redis with AOF+RDB persistence enabled
 from app.core.config_model import model_configs
+from app.core.http_client_config import create_sync_http_client
 import json
 
 logger = get_logger(__name__)
@@ -75,7 +81,7 @@ class ModelConfigService:
     # 系统兜底
     _default_provider = "siliconflow"
     _default_model_id = "qwen2.5-7b-instruct"
-    
+
     # Redis key template
     _USER_MODEL_KEY_TPL = "user_model:{user_id}"
 
@@ -95,10 +101,18 @@ class ModelConfigService:
         api_key = os.getenv(cfg["api_key_env"])
         if not api_key:
             raise ValueError(f"Env {cfg['api_key_env']} not set")
+
+        # 使用HTTP客户端配置来创建LLM实例
+        base_url = cfg["base_url"].strip()
+
+        # 创建自定义HTTP客户端以处理HTTP/2兼容性问题
+        http_client = create_sync_http_client(base_url, api_key)
+
         return ChatOpenAI(
-            base_url=cfg["base_url"].strip(),
+            base_url=base_url,
             api_key=api_key,
-            model=cfg["name"]
+            model=cfg["name"],
+            http_client=http_client
         )
 
     # ---------- 对外 API ----------

@@ -21,8 +21,8 @@ logger = get_logger(__name__)
 router = APIRouter(prefix="/ai/chat", tags=["chat"])
 
 async def event_stream(
-    messages: list, 
-    user_id: str, 
+    messages: list,
+    user_id: str,
     conversation_id: str
 ):
     try:
@@ -41,9 +41,18 @@ async def event_stream(
             # 1. 工具调用信息
             if last_msg.tool_calls:
                 tool = last_msg.tool_calls[0]
+
+                # 验证工具参数格式
+                validated_args = {}
+                for key, value in tool['args'].items():
+                    if isinstance(value, str):
+                        validated_args[key] = value
+                    else:
+                        validated_args[key] = str(value)
+
                 tool_info = (
                     f"\n\n📋 调用工具：{tool['name']}\n"
-                    f"```json\n{json.dumps(tool['args'], indent=2)}\n```\n"
+                    f"```json\n{json.dumps(validated_args, indent=2, ensure_ascii=False)}\n```\n"
                 )
                 for ch in tool_info:
                     delta = ch.lstrip("\n\r") # 去掉左侧换行
@@ -64,11 +73,17 @@ async def event_stream(
             complete_ai = "".join(ai_parts)
             if complete_ai.strip():
                 history = get_redis_session_history(user_id, conversation_id)
-                history.add_ai_message(complete_ai)   # 这会触发 _save_to_redis()
+                # 确保AI消息内容是字符串类型
+                clean_complete_ai = str(complete_ai) if complete_ai is not None else ""
+                history.add_ai_message(clean_complete_ai)   # 这会触发 _save_to_redis()
         yield "data: [DONE]\n\n"
     except GeneratorExit:
         logger.info("SSE 客户端断开连接, user=%s", user_id)   # 或 logger.debug
         logger.info("SSE 客户端断开连接, user=%s")
+    except Exception as e:
+        logger.error(f"事件流处理错误: {e}")
+        yield f"data: {json.dumps({'error': '处理请求时发生错误'})}\n\n"
+        yield "data: [DONE]\n\n"
 
 # ---------------- 流式接口 ----------------
 @router.post("/stream")
@@ -91,7 +106,7 @@ def chat_stream(req: ChatRequest, user_id: str = Depends(verify_token)):
     else:
         # 如果提供了具体的conversation_id，添加到活跃会话中
         add_active_session(user_id, conversation_id)
-    
+
     # 把前端历史写进记忆（只写一次，后续由 RunnableWithMessageHistory 自动维护）
     history = get_redis_session_history(user_id, conversation_id)
     history.clear()  # 避免重复追加，可选
@@ -111,7 +126,7 @@ def chat_stream(req: ChatRequest, user_id: str = Depends(verify_token)):
     history_list = list(history.messages)
     history_list.append(HumanMessage(content=last_raw))
     messages = history_list
-  
+
     return StreamingResponse(
         event_stream(messages, user_id, conversation_id),
         media_type="text/event-stream",
