@@ -135,7 +135,7 @@ def get_session_detail(
             user_active = get_active_sessions(user_id)
             if user_active:
                 actual_conversation_id = user_active[0]
-                print(f"使用活跃会话ID: {actual_conversation_id}")
+                # print(f"使用活跃会话ID: {actual_conversation_id}")
             else:
                 return {
                     "code": 200,
