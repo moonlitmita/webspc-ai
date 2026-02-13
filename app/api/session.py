@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 
 @router.get("/end_session")
 def end_session(
-    conversation_id: str = Query("", description="要结束的会话ID,空串则直接找唯一活跃会话"), 
+    conversation_id: str = Query("", description="要结束的会话ID,空串则直接找唯一活跃会话"),
     user_id: str = Depends(verify_token)
 ):
 
@@ -29,19 +29,30 @@ def end_session(
         if conversation_id == "default" or not conversation_id:
             user_active = get_active_sessions(user_id)
             if user_active:
-                actual_conversation_id = user_active[0]
-                remove_active_session(user_id, actual_conversation_id)
+                # 如果有多个活跃会话且未指定具体会话ID，返回错误提示
+                if len(user_active) > 1:
+                    return {
+                        "code": 400,
+                        "data": {
+                            "message": f"用户有多个活跃会话，请指定要结束的具体会话ID: {user_active}",
+                            "conversation_id": None
+                        }
+                    }
+                else:
+                    # 只有一个活跃会话，结束它
+                    actual_conversation_id = user_active[0]
+                    remove_active_session(user_id, actual_conversation_id)
             else:
                 # 🔥 没有活跃会话 → 自动创建默认会话
                 actual_conversation_id = "default"
 
-        else: 
+        else:
             # ---- 清理活跃集合 ----
             remove_active_session(user_id, actual_conversation_id)
 
         # ---- 触发落盘（get_session_history 会自动 save） ----
         history = get_redis_session_history(user_id, actual_conversation_id)
-        
+
         return {
             "code": 200,
             "data": {
@@ -129,13 +140,24 @@ def get_session_detail(
     try:
         # 确定实际要使用的会话ID
         actual_conversation_id = conversation_id
-        
+
         # 如果前端传入的是"default"或空字符串，则查找用户的活跃会话
         if conversation_id == "default" or not conversation_id:
             user_active = get_active_sessions(user_id)
             if user_active:
-                actual_conversation_id = user_active[0]
-                print(f"使用活跃会话ID: {actual_conversation_id}")
+                # 如果有多个活跃会话且未指定具体会话ID，返回错误提示
+                if len(user_active) > 1:
+                    return {
+                        "code": 400,
+                        "data": {
+                            "session_detail": [],
+                            "conversation_id": None,
+                            "message": f"用户有多个活跃会话，请指定具体的会话ID: {user_active}"
+                        }
+                    }
+                else:
+                    actual_conversation_id = user_active[0]
+                    # print(f"使用活跃会话ID: {actual_conversation_id}")
             else:
                 return {
                     "code": 200,
@@ -145,16 +167,13 @@ def get_session_detail(
                         "message": "当前没有活跃会话"
                     }
                 }
-        remove_active_session(user_id, conversation_id)
 
-        # 把该会话标记为"活跃"
-        add_active_session(user_id, actual_conversation_id)
-        
         history = get_redis_session_history(user_id, actual_conversation_id)
         return {
             "code": 200,
             "data": {
                 "session_detail": [msg_to_dict(m) for m in history.messages],
+                "conversation_id": actual_conversation_id,
                 "message": "会话详情获取成功"
             }
         }

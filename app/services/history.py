@@ -54,7 +54,7 @@ class RedisChatMessageHistory(ChatMessageHistory):
             ],
             ensure_ascii=False,
         )
-        self._redis_client.setex(self._session_key, 3600, body)
+        self._redis_client.setex(self._session_key, 3600 * 8, body)
 
     def add_user_message(self, message: str) -> None:
         super().add_user_message(message)

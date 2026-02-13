@@ -6,6 +6,9 @@
 import json
 from app.services.robust_mcp_client import RobustMultiServerMCPClient
 from app.services.redis_tools import mcp_redis_client as r  # This client should connect to Redis with AOF+RDB persistence enabled
+from app.core.logger_config import get_logger
+
+logger = get_logger(__name__)
 
 def load_mcp_config_from_redis() -> dict:
     """
@@ -19,7 +22,7 @@ def load_mcp_config_from_redis() -> dict:
             # 如果 Redis 中没有配置，返回默认配置
             return get_default_mcp_config()
     except Exception as e:
-        print(f"从 Redis 加载 MCP 配置时出错: {e}")
+        logger.warning(f"从 Redis 加载 MCP 配置时出错: {e}")
         # 出错时返回默认配置
         return get_default_mcp_config()
 
@@ -41,7 +44,7 @@ def save_mcp_config_to_redis(cfg: dict):
         else:
             raise Exception("无法获取配置更新锁，可能有其他更新操作正在进行")
     except Exception as e:
-        print(f"保存 MCP 配置到 Redis 时出错: {e}")
+        logger.warning(f"保存 MCP 配置到 Redis 时出错: {e}")
         raise e
 
 def get_default_mcp_config() -> dict:

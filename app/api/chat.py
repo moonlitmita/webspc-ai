@@ -3,7 +3,7 @@
 #Distributed under MIT license.
 #See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from app.services.auth import verify_token
 from app.services.redis_tools import get_active_sessions, add_active_session
@@ -21,8 +21,8 @@ logger = get_logger(__name__)
 router = APIRouter(prefix="/ai/chat", tags=["chat"])
 
 async def event_stream(
-    messages: list, 
-    user_id: str, 
+    messages: list,
+    user_id: str,
     conversation_id: str
 ):
     try:
@@ -41,9 +41,18 @@ async def event_stream(
             # 1. 工具调用信息
             if last_msg.tool_calls:
                 tool = last_msg.tool_calls[0]
+
+                # 验证工具参数格式
+                validated_args = {}
+                for key, value in tool['args'].items():
+                    if isinstance(value, str):
+                        validated_args[key] = value
+                    else:
+                        validated_args[key] = str(value)
+
                 tool_info = (
                     f"\n\n📋 调用工具：{tool['name']}\n"
-                    f"```json\n{json.dumps(tool['args'], indent=2)}\n```\n"
+                    f"```json\n{json.dumps(validated_args, indent=2, ensure_ascii=False)}\n```\n"
                 )
                 for ch in tool_info:
                     delta = ch.lstrip("\n\r") # 去掉左侧换行
@@ -64,38 +73,48 @@ async def event_stream(
             complete_ai = "".join(ai_parts)
             if complete_ai.strip():
                 history = get_redis_session_history(user_id, conversation_id)
-                history.add_ai_message(complete_ai)   # 这会触发 _save_to_redis()
+                # 确保AI消息内容是字符串类型
+                clean_complete_ai = str(complete_ai) if complete_ai is not None else ""
+                history.add_ai_message(clean_complete_ai)   # 这会触发 _save_to_redis()
         yield "data: [DONE]\n\n"
     except GeneratorExit:
         logger.info("SSE 客户端断开连接, user=%s", user_id)   # 或 logger.debug
         logger.info("SSE 客户端断开连接, user=%s")
+    except Exception as e:
+        logger.error(f"事件流处理错误: {e}")
+        yield f"data: {json.dumps({'error': '处理请求时发生错误'})}\n\n"
+        yield "data: [DONE]\n\n"
+
+
+import tiktoken
+
+def count_tokens(text: str, model: str = "gpt-4") -> int:
+    """计算文本的 token 数"""
+    try:
+        encoding = tiktoken.encoding_for_model(model)
+    except KeyError:
+        encoding = tiktoken.get_encoding("cl100k_base")  # 默认编码
+    return len(encoding.encode(text))
 
 # ---------------- 流式接口 ----------------
 @router.post("/stream")
 def chat_stream(req: ChatRequest, user_id: str = Depends(verify_token)):
-    # 如果未提供conversation_id或为默认值，则继续使用当前活跃会话
-    # 否则创建新的会话
     conversation_id = req.conversation_id
-    is_new_conversation = False
     if not conversation_id or conversation_id == "default":
-        # 查找用户当前的活跃会话
-        user_active_conversations = get_active_sessions(user_id)
-        if user_active_conversations:
-            # 使用现有的活跃会话
-            conversation_id = user_active_conversations[0]
-        else:
-            # 创建新的会话
-            conversation_id = str(uuid.uuid4())
-            add_active_session(user_id, conversation_id)
-            is_new_conversation = True
+        # 创建新的会话
+        conversation_id = str(uuid.uuid4())
+        add_active_session(user_id, conversation_id)
     else:
         # 如果提供了具体的conversation_id，添加到活跃会话中
         add_active_session(user_id, conversation_id)
-    
+
+    print(f"extraData: {req.extraData}")
+
     # 把前端历史写进记忆（只写一次，后续由 RunnableWithMessageHistory 自动维护）
     history = get_redis_session_history(user_id, conversation_id)
-    history.clear()  # 避免重复追加，可选
-    for m in req.messages:
+    # 不再清空历史记录，而是保留现有历史
+    # 遍历消息列表(除了最后一条消息)
+    for m in req.messages[:-1]:
         if m["role"] == "user":
             history.add_user_message(m["content"])
         elif m["role"] == "assistant":
@@ -103,17 +122,28 @@ def chat_stream(req: ChatRequest, user_id: str = Depends(verify_token)):
             if m["content"] and m["content"].strip():
                 history.add_ai_message(m["content"])
 
-    # 最后一条是用户最新输入
-    last_raw = req.messages[-1]["content"] if req.messages else ""
-    # 2. 如果有 extraData，拼到内容后面
-    if req.extraData is not None:
-        last_raw += f"\n\n<!--DATA:{json.dumps(req.extraData, ensure_ascii=False)}-->"
+    # 构建最终消息列表
     history_list = list(history.messages)
-    history_list.append(HumanMessage(content=last_raw))
-    messages = history_list
-  
+
+    # 处理最后一条消息
+    if req.messages:
+        content = req.messages[-1].get("content", "")
+        if req.extraData:
+            content += f"\n\n<!--DATA:{json.dumps(req.extraData, ensure_ascii=False)}-->"
+        history_list.append(HumanMessage(content=content))
+    
+    # 计算实际会传给 LLM 的 token 数
+    total_tokens = sum(count_tokens(str(m.content)) for m in history_list)
+    
+    # token超限提醒
+    if total_tokens > 30000:
+        raise HTTPException(
+            status_code=413,
+            detail=f"上下文过长: {total_tokens} tokens，请开启新对话或缩短输入"
+        )
+    
     return StreamingResponse(
-        event_stream(messages, user_id, conversation_id),
+        event_stream(history_list, user_id, conversation_id),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache"},
     )
