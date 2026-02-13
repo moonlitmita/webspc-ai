@@ -94,7 +94,6 @@ def get_active_sessions(user_id: str) -> list[str]:
 def add_active_session(user_id: str, conversation_id: str) -> None:
     """把 conversation_id 加入用户活跃集合，并刷新 TTL"""
     key = ACTIVE_SET_KEY_TPL.format(user_id=user_id)
-    session_redis_client.delete(key)
     session_redis_client.sadd(key, conversation_id)          # 去重加入
     session_redis_client.expire(key, TTL_SECONDS)            # 每次更新过期时间
 

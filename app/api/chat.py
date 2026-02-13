@@ -112,7 +112,7 @@ def chat_stream(req: ChatRequest, user_id: str = Depends(verify_token)):
 
     # 把前端历史写进记忆（只写一次，后续由 RunnableWithMessageHistory 自动维护）
     history = get_redis_session_history(user_id, conversation_id)
-    history.clear()  # 避免重复追加，可选
+    # 不再清空历史记录，而是保留现有历史
     # 遍历消息列表(除了最后一条消息)
     for m in req.messages[:-1]:
         if m["role"] == "user":
