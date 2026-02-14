@@ -108,8 +108,6 @@ def chat_stream(req: ChatRequest, user_id: str = Depends(verify_token)):
         # 如果提供了具体的conversation_id，添加到活跃会话中
         add_active_session(user_id, conversation_id)
 
-    print(f"extraData: {req.extraData}")
-
     # 把前端历史写进记忆（只写一次，后续由 RunnableWithMessageHistory 自动维护）
     history = get_redis_session_history(user_id, conversation_id)
     # 不再清空历史记录，而是保留现有历史
