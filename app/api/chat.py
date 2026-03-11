@@ -143,5 +143,8 @@ def chat_stream(req: ChatRequest, user_id: str = Depends(verify_token)):
     return StreamingResponse(
         event_stream(history_list, user_id, conversation_id),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache"},
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Conversation-ID": conversation_id  # 在 Header 中返回会话 ID
+        },
     )
