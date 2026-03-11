@@ -112,12 +112,18 @@ WebSPC把传统SPC从“事后看图”升级成“7×24 的 AI 质量副驾驶�
 
 1. 安装依赖：
    ```bash
-   pip install -r requirements.txt 或者uv sync
+   pip install -r requirements.txt 或 uv sync
    ```
 
 2. 配置环境变量（设置 SILICONFLOW_API_KEY 等）
 
-3. 运行服务器：
+3. 拉起 redis server
+   cd dev-redis
+   ```bash
+   powershell -NoExit -ExecutionPolicy Bypass -File ".\start-all.ps1"
+   ```
+
+4. 运行服务器：
    开发环境：
    ```bash
    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 --log-level debug

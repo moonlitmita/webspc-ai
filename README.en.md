@@ -121,7 +121,13 @@ The following environment variables need to be configured:
 
 2. Configure environment variables (set SILICONFLOW_API_KEY, etc.)
 
-3. Run the server:
+3. Start up Redis server
+   cd dev-redis
+   ```bash
+   powershell -NoExit -ExecutionPolicy Bypass -File ".\start-all.ps1"
+   ```
+
+4. Run the server:
    Development environment:
    ```bash
    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 --log-level debug

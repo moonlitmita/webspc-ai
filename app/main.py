@@ -38,6 +38,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Conversation-ID"],  # 暴露自定义响应头给前端
 )
 
 app.include_router(chat.router)
