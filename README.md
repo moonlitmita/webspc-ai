@@ -126,7 +126,7 @@ WebSPC把传统SPC从“事后看图”升级成“7×24 的 AI 质量副驾驶�
 4. 运行服务器：
    开发环境：
    ```bash
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 --log-level debug
+   python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
    ```
    生产环境：
    ```
