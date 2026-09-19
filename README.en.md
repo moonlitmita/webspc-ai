@@ -128,14 +128,18 @@ The following environment variables need to be configured:
    ```
 
 4. Run the server:
+
    Development environment:
    ```bash
    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 --log-level debug
    ```
    Production environment:
-   ```
-   # Deploy using k8s or K3s
-   ```
+  
+   For a detailed project deployment guide, contact the author:
+
+   - [K3S Basic Environment Setup](https://www.bilibili.com/cheese/play/ep2460548)
+
+   - WebSPC Project Deployment Detailed Documentation and Deployment Files
 
 ## Development Conventions
 
@@ -152,10 +156,6 @@ The following environment variables need to be configured:
 - If the MCP server returns data with link addresses, the AI will return those addresses
 - The project uses LangGraph's ReAct agent mode, supporting tool calling
 
-## Project Demo Address: https://webspc.top
-
-Username, Login password: Contact the author for access
-
 ## Technical Support:
 
 Author: Yu Wang
@@ -167,6 +167,6 @@ QQ: 271989251
 Weixin: valleyfo
 
 Note: Technical support includes but is not limited to
-    Custom business development,
-    Project deployment,
-    Application explanation and so on
+Custom business development,
+Project deployment,
+Application explanation and so on
