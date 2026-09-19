@@ -6,17 +6,17 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    env: str
-    frontend_url: str
-    redis_session_host: str
-    redis_session_port: int
-    redis_model_host: str
-    redis_model_port: int
-    redis_mcp_host: str
-    redis_mcp_port: int
-    redis_celery_host: str
-    redis_celery_port: int
-    localmodel_api_key: str
+    env: str = "dev"
+    frontend_url: str = "http://localhost:5173"
+    redis_session_host: str = "localhost"
+    redis_session_port: int = 6380
+    redis_model_host: str = "localhost"
+    redis_model_port: int = 6381
+    redis_mcp_host: str = "localhost"
+    redis_mcp_port: int = 6382
+    redis_celery_host: str = "localhost"
+    redis_celery_port: int = 6383
+    localmodel_api_key: str = "default"
     siliconflow_api_key: str
     modelscope_api_key: str
     dashscope_api_key: str
